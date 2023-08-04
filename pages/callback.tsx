@@ -6,33 +6,27 @@ function Callback() {
     const [login, setLogin] = useState<string>();
     const [showCodeInput, setShowCodeInput] = useState<boolean>(false);
     const [verCode, setVerCode] = useState('');
-    const [logedIn, setIsLoggedIn] = useState(false);
 
     const code = router.query.code as string;
 
     const authLogin = async () => {
         const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
         if (storedIsLoggedIn === 'true') {
-            router.push('/Home');
+            router.push('Home');
         }
-        try {
-            const response = await fetch('http://localhost/api/auth/login?code=' + code);
-            const data = await response.json();
-            setLogin(data.message);
-            if (data.message === 'Internal server error') {
-                router.push('/');
-            }
-            localStorage.setItem("nickname", data.nickname);
-            localStorage.setItem("id", data.id);
-            if (data.is2faEnabled === false) {
-                router.push('/Home');
-                localStorage.setItem('isLoggedIn', 'true');
-                setIsLoggedIn(true);
-            } else {
-                setShowCodeInput(true);
-            }
-        } catch (error) {
-            console.error('Error sending data:', error);
+        const response = await(await fetch('http://localhost/api/auth/login?code=' + code)).json();
+        const data = await response.json();
+        if (response.statusCode === 500) {
+            router.push('/');
+        }
+        setLogin(data.message);
+        localStorage.setItem("nickname", data.nickname);
+        localStorage.setItem("id", data.id);
+        if (data.is2faEnabled === false) {
+            localStorage.setItem('isLoggedIn', 'true');
+            router.push('Home');
+        } else {
+            setShowCodeInput(true);
         }
     }
 
@@ -72,6 +66,7 @@ function Callback() {
             })
             .catch((error) => { // 에러시
                 console.error('Error sending data:', error);
+                setVerCode('');
                 setLogin(error);
             });
     };
@@ -81,7 +76,7 @@ function Callback() {
         return (
             <>
                 <div>
-                    login = {login}
+                    로딩중..
                 </div>
                 <div>
                     {showCodeInput && (

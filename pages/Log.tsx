@@ -12,7 +12,7 @@ function Log() {
     if (storedIsLoggedIn === 'true') {
       setIsLoggedIn(true);
     }
-  }, []);
+  }, );
 
   useEffect(() =>{
     if (startLogin === true){
