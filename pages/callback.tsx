@@ -15,8 +15,13 @@ function Callback() {
             router.push('Home');
         }
         const response = await(await fetch('http://localhost/api/auth/login?code=' + code)).json();
+        if (!response.ok){
+            alert("response not OK");
+            router.push('/');
+        }
         const data = await response.json();
         if (response.statusCode === 500) {
+            alert("500 Internal Server Error");
             router.push('/');
         }
         setLogin(data.message);
@@ -32,6 +37,7 @@ function Callback() {
 
     useEffect(() => {
         authLogin();
+        console.log("Callback Page");
     }, []);
 
     function sendAuthCode(code: string) {
@@ -76,7 +82,7 @@ function Callback() {
         return (
             <>
                 <div>
-                    로딩중..
+                    Login = {login}
                 </div>
                 <div>
                     {showCodeInput && (
